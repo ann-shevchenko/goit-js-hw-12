@@ -45,11 +45,14 @@ function scrollImages(rows) {
 }
 
 function updateImageList(hits, append) {
-  let markup = renderImageList(hits);
+  const markup = renderImageList(hits);
   if (append) {
-    markup = imageList.innerHTML + markup;
+    const tmp = document.createElement('template');
+    tmp.innerHTML = markup
+    imageList.appendChild(tmp.content);
+  } else {
+    imageList.innerHTML = markup;
   }
-  imageList.innerHTML = markup;
   lightbox.refresh();
 }
 
@@ -119,6 +122,11 @@ form.addEventListener('submit', async event => {
   event.preventDefault();
 
   search.reset(event.target.elements.query.value);
+  if (!search.query.length) {
+    showErrorToast("Please input non-blank query.");
+    return;
+  }
+
   updateImageList([], false);
 
   await loadImages(data => {
